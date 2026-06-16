@@ -21,6 +21,15 @@
     --radius-md: 20px;
     --radius-lg: 28px;
     --radius-xl: 36px;
+
+    --bg-c1: 139,92,246;
+    --bg-c2: 59,130,246;
+    --bg-c3: 236,72,153;
+    --bg-c4: 6,182,212;
+    --bg-c5: 168,85,247;
+    --bg-c6: 244,114,182;
+    --bg-c7: 99,102,241;
+    --bg-c8: 34,211,238;
   }
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -49,12 +58,13 @@
     top: -50%;
     left: -50%;
     background:
-      radial-gradient(ellipse 600px 600px at 20% 30%, rgba(139,92,246,0.8) 0%, transparent 60%),
-      radial-gradient(ellipse 500px 500px at 75% 20%, rgba(59,130,246,0.7) 0%, transparent 55%),
-      radial-gradient(ellipse 550px 550px at 50% 70%, rgba(236,72,153,0.7) 0%, transparent 55%),
-      radial-gradient(ellipse 400px 400px at 80% 75%, rgba(6,182,212,0.6) 0%, transparent 50%),
-      radial-gradient(ellipse 450px 450px at 30% 80%, rgba(168,85,247,0.5) 0%, transparent 55%);
+      radial-gradient(ellipse 600px 600px at 20% 30%, rgba(var(--bg-c1),0.8) 0%, transparent 60%),
+      radial-gradient(ellipse 500px 500px at 75% 20%, rgba(var(--bg-c2),0.7) 0%, transparent 55%),
+      radial-gradient(ellipse 550px 550px at 50% 70%, rgba(var(--bg-c3),0.7) 0%, transparent 55%),
+      radial-gradient(ellipse 400px 400px at 80% 75%, rgba(var(--bg-c4),0.6) 0%, transparent 50%),
+      radial-gradient(ellipse 450px 450px at 30% 80%, rgba(var(--bg-c5),0.5) 0%, transparent 55%);
     animation: liquidFlow 20s ease-in-out infinite alternate;
+    transition: background 1.8s ease;
   }
 
   .liquid-bg::after {
@@ -65,10 +75,11 @@
     top: -30%;
     left: -30%;
     background:
-      radial-gradient(ellipse 400px 400px at 60% 50%, rgba(244,114,182,0.5) 0%, transparent 50%),
-      radial-gradient(ellipse 350px 350px at 25% 60%, rgba(99,102,241,0.4) 0%, transparent 50%),
-      radial-gradient(ellipse 300px 300px at 80% 40%, rgba(34,211,238,0.4) 0%, transparent 45%);
+      radial-gradient(ellipse 400px 400px at 60% 50%, rgba(var(--bg-c6),0.5) 0%, transparent 50%),
+      radial-gradient(ellipse 350px 350px at 25% 60%, rgba(var(--bg-c7),0.4) 0%, transparent 50%),
+      radial-gradient(ellipse 300px 300px at 80% 40%, rgba(var(--bg-c8),0.4) 0%, transparent 45%);
     animation: liquidFlow2 25s ease-in-out infinite alternate;
+    transition: background 1.8s ease;
   }
 
   @keyframes liquidFlow {
@@ -97,33 +108,37 @@
 
   .liquid-orb:nth-child(1) {
     width: 500px; height: 500px;
-    background: rgba(139,92,246,0.6);
+    background: rgba(var(--bg-c1),0.6);
     top: 10%; left: 15%;
     animation-delay: 0s;
+    transition: background 1.8s ease;
   }
 
   .liquid-orb:nth-child(2) {
     width: 400px; height: 400px;
-    background: rgba(236,72,153,0.5);
+    background: rgba(var(--bg-c3),0.5);
     top: 50%; right: 10%;
     animation-delay: -5s;
     animation-duration: 18s;
+    transition: background 1.8s ease;
   }
 
   .liquid-orb:nth-child(3) {
     width: 350px; height: 350px;
-    background: rgba(59,130,246,0.5);
+    background: rgba(var(--bg-c2),0.5);
     bottom: 15%; left: 30%;
     animation-delay: -10s;
     animation-duration: 22s;
+    transition: background 1.8s ease;
   }
 
   .liquid-orb:nth-child(4) {
     width: 300px; height: 300px;
-    background: rgba(6,182,212,0.4);
+    background: rgba(var(--bg-c4),0.4);
     top: 30%; left: 55%;
     animation-delay: -3s;
     animation-duration: 20s;
+    transition: background 1.8s ease;
   }
 
   @keyframes orbFloat {
@@ -1050,6 +1065,113 @@
   let currentFilter = 'all';
   let isShuffle = false;
 
+  const DEFAULT_COLORS = [
+    [139,92,246], [59,130,246], [236,72,153],
+    [6,182,212], [168,85,247], [244,114,182],
+    [99,102,241], [34,211,238]
+  ];
+
+  function extractColorsFromArtwork(src) {
+    return new Promise((resolve) => {
+      if (!src) { resolve(null); return; }
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+      img.onload = function() {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        const size = 40;
+        canvas.width = size;
+        canvas.height = size;
+        ctx.drawImage(img, 0, 0, size, size);
+        const data = ctx.getImageData(0, 0, size, size).data;
+        const pixels = [];
+        for (let i = 0; i < data.length; i += 4) {
+          const r = data[i], g = data[i+1], b = data[i+2];
+          if (r + g + b > 30 && r + g + b < 700) {
+            pixels.push([r, g, b]);
+          }
+        }
+        if (pixels.length < 8) { resolve(null); return; }
+
+        const k = 8;
+        let centroids = [];
+        for (let i = 0; i < k; i++) {
+          centroids.push(pixels[Math.floor(Math.random() * pixels.length)].slice());
+        }
+
+        for (let iter = 0; iter < 10; iter++) {
+          const clusters = Array.from({length: k}, () => []);
+          pixels.forEach(px => {
+            let minD = Infinity, minI = 0;
+            centroids.forEach((c, ci) => {
+              const d = (px[0]-c[0])**2 + (px[1]-c[1])**2 + (px[2]-c[2])**2;
+              if (d < minD) { minD = d; minI = ci; }
+            });
+            clusters[minI].push(px);
+          });
+          clusters.forEach((cl, ci) => {
+            if (cl.length === 0) return;
+            centroids[ci] = [
+              Math.round(cl.reduce((s,p)=>s+p[0],0)/cl.length),
+              Math.round(cl.reduce((s,p)=>s+p[1],0)/cl.length),
+              Math.round(cl.reduce((s,p)=>s+p[2],0)/cl.length)
+            ];
+          });
+        }
+
+        centroids.sort((a, b) => {
+          const satA = Math.max(a[0], a[1], a[2]) - Math.min(a[0], a[1], a[2]);
+          const satB = Math.max(b[0], b[1], b[2]) - Math.min(b[0], b[1], b[2]);
+          return satB - satA;
+        });
+
+        const vibrant = centroids.filter(c => {
+          const sat = Math.max(c[0], c[1], c[2]) - Math.min(c[0], c[1], c[2]);
+          const bright = (c[0] + c[1] + c[2]) / 3;
+          return sat > 25 && bright > 40 && bright < 220;
+        });
+
+        const result = [];
+        for (let i = 0; i < 8; i++) {
+          if (vibrant[i]) {
+            result.push(vibrant[i]);
+          } else if (centroids[i]) {
+            result.push(centroids[i]);
+          } else {
+            result.push(DEFAULT_COLORS[i]);
+          }
+        }
+        while (result.length < 8) result.push(DEFAULT_COLORS[result.length]);
+        resolve(result);
+      };
+      img.onerror = function() { resolve(null); };
+      img.src = src;
+    });
+  }
+
+  function applyColors(colors) {
+    const root = document.documentElement;
+    if (!colors) {
+      root.style.setProperty('--bg-c1', '139,92,246');
+      root.style.setProperty('--bg-c2', '59,130,246');
+      root.style.setProperty('--bg-c3', '236,72,153');
+      root.style.setProperty('--bg-c4', '6,182,212');
+      root.style.setProperty('--bg-c5', '168,85,247');
+      root.style.setProperty('--bg-c6', '244,114,182');
+      root.style.setProperty('--bg-c7', '99,102,241');
+      root.style.setProperty('--bg-c8', '34,211,238');
+      return;
+    }
+    root.style.setProperty('--bg-c1', colors[0].join(','));
+    root.style.setProperty('--bg-c2', colors[1].join(','));
+    root.style.setProperty('--bg-c3', colors[2].join(','));
+    root.style.setProperty('--bg-c4', colors[3].join(','));
+    root.style.setProperty('--bg-c5', colors[4].join(','));
+    root.style.setProperty('--bg-c6', colors[5].join(','));
+    root.style.setProperty('--bg-c7', colors[6].join(','));
+    root.style.setProperty('--bg-c8', colors[7].join(','));
+  }
+
   function readMetadata(item) {
     return new Promise((resolve) => {
       if (item.type !== 'music' || !window.jsmediatags) {
@@ -1211,6 +1333,7 @@
     if (item.type === 'video') {
       musicVisual.style.display = 'none';
       videoContainer.classList.add('visible');
+      applyColors(null);
       audioPlayer.pause();
       audioPlayer.currentTime = 0;
       videoPlayer.src = item.url;
@@ -1227,9 +1350,13 @@
       if (item.artwork) {
         musicVisualArt.src = item.artwork;
         musicVisualArt.classList.add('visible');
+        extractColorsFromArtwork(item.artwork).then(colors => {
+          if (currentIndex === index) applyColors(colors);
+        });
       } else {
         musicVisualArt.src = '';
         musicVisualArt.classList.remove('visible');
+        applyColors(null);
       }
 
       audioPlayer.src = item.url;
