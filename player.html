@@ -501,7 +501,8 @@
     height: 300px;
     position: relative;
     margin-bottom: 2rem;
-    animation: none;
+    align-items: center;
+    justify-content: center;
   }
 
   .music-visual.playing {
@@ -1221,7 +1222,7 @@
       videoContainer.classList.remove('visible');
       videoPlayer.pause();
       videoPlayer.currentTime = 0;
-      musicVisual.style.display = '';
+      musicVisual.style.display = 'flex';
 
       if (item.artwork) {
         musicVisualArt.src = item.artwork;
