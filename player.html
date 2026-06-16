@@ -524,49 +524,6 @@
     animation: none;
   }
 
-  .music-visual-center {
-    width: 100px;
-    height: 100px;
-    background: rgba(255,255,255,0.08);
-    border-radius: 50%;
-    position: absolute;
-    z-index: 3;
-    border: 2px solid rgba(255,255,255,0.12);
-    -webkit-backdrop-filter: blur(20px);
-    backdrop-filter: blur(20px);
-    box-shadow: inset 0 2px 4px rgba(255,255,255,0.1);
-  }
-
-  .music-visual-center::after {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 12px;
-    height: 12px;
-    background: rgba(255,255,255,0.2);
-    border-radius: 50%;
-    border: 1px solid rgba(255,255,255,0.15);
-  }
-
-  .music-visual-ring {
-    position: absolute;
-    inset: 20px;
-    border: 1px solid rgba(255,255,255,0.06);
-    border-radius: 50%;
-    z-index: 1;
-    pointer-events: none;
-  }
-
-  .music-visual-dots {
-    display: none;
-  }
-
-  .visual-dot {
-    display: none;
-  }
-
   /* ===== NOW PLAYING INFO ===== */
   .now-playing-info {
     text-align: center;
@@ -977,8 +934,6 @@
       <div class="music-visual" id="musicVisual" style="display:none;">
         <div class="album-art-wrapper">
           <img class="music-visual-art" id="musicVisualArt" src="" alt="">
-          <div class="music-visual-ring"></div>
-          <div class="music-visual-center"></div>
         </div>
       </div>
 
@@ -1003,7 +958,7 @@
         </div>
 
         <div class="controls">
-          <button class="ctrl-btn" id="shuffleBtn" title="Aleatorio">&#128256;</button>
+          <button class="ctrl-btn" id="shuffleBtn" title="Aleatorio"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/><line x1="4" y1="4" x2="9" y2="9"/></svg></button>
           <button class="ctrl-btn" id="prevBtn" title="Anterior">&#9198;</button>
           <button class="ctrl-btn play-btn" id="playBtn" title="Reproducir">&#9654;</button>
           <button class="ctrl-btn" id="nextBtn" title="Siguiente">&#9197;</button>
